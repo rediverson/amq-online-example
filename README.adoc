@@ -1,0 +1,50 @@
+= amq-online-example
+
+== Overview
+Sample AMQ-Online install and a Fuse(camel) application on OpenShift 4.
+
+NOTE: For official instructions please see the AMQ Online and Fuse documentation.
+
+== AMQ Online installation
+The commands below will setup everything needed for our AMQ online sample. 
+
+NOTE: Be sure to wait between steps until the previous step completes
+
+[source,bash,options="nowrap",subs="attributes+"]
+----
+oc new-project amq-online-infra
+oc apply -f install/bundles/amq-online
+oc apply -f install/components/example-plans
+oc apply -f install/components/example-roles
+oc apply -f install/components/example-authservices/standard-authservice.yaml
+oc apply -f examples/myspace.yaml
+oc apply -f examples/myqueue.yaml
+oc apply -f examples/user1.yaml
+----
+
+Use the command below to view the settings configured in the myspace address space.  Note what the `Service Host:`` value is .
+
+
+
+== Install the fuse component
+The fuse component will be used to produce and consume messages from the queue created in the steps above.
+
+* Find the service address for your address space using:
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+oc describe AddressSpace/myspace | more
+----
+Note what the `Service Host:` value is
+
+* Replace the host portion of the `AMQP_REMOTE_URI` property in the file https://github.com/rediverson/amq-online-example/blob/master/fuse/src/main/resources/application.properties[application.properties] with the service host found in the above instruction.
+
+* Build and deploy the fuse component
++
+[source,bash,options="nowrap",subs="attributes+"]
+----
+cd fuse
+oc import-image fuse-java-openshift:1.5 --from=registry.access.redhat.com/fuse7/fuse-java-openshift:1.5 --confirm
+mvn clean -DskipTests fabric8:deploy -Popenshift -Dfabric8.generator.fromMode=istag -Dfabric8.generator.from=amq-online-infra/fuse-java-openshift:1.5
+mvn clean -DskipTests fabric8:resource fabric8:apply -Popenshift
+----
