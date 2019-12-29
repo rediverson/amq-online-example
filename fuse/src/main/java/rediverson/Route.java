@@ -25,7 +25,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
 /**
- * A simple Camel REST DSL route that implements the greetings service.
+ * A simple Camel REST DSL route.
  * 
  */
 @Component
@@ -61,6 +61,7 @@ public class Route extends RouteBuilder {
         .log("Message body from : ${body}")
         .onException(RuntimeException.class).log("Exception");
 
+        // @formatter:on
 
     }        
 }
