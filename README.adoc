@@ -22,10 +22,6 @@ oc apply -f examples/myqueue.yaml
 oc apply -f examples/user1.yaml
 ----
 
-Use the command below to view the settings configured in the myspace address space.  Note what the `Service Host:`` value is .
-
-
-
 == Install the fuse component
 The fuse component will be used to produce and consume messages from the queue created in the steps above.
 
